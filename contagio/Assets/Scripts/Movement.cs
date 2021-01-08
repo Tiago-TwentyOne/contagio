@@ -21,7 +21,8 @@ public class Movement : MonoBehaviour
     private float minZ;
     private float maxZ;
 
-    public bool isInfected;
+    public bool infected;
+    public bool hasMask;
 
     public GameObject[] players;
 
@@ -32,10 +33,10 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     private void Start()
     {
-        minX = 5f;
-        maxX = 45f;
-        minZ = -45f;
-        maxZ = -5f;
+        minX = 0f;
+        maxX = 100f;
+        minZ = 0f;
+        maxZ = -100f;
 
         players = GameObject.FindGameObjectsWithTag("Player");
 
@@ -47,7 +48,7 @@ public class Movement : MonoBehaviour
     private void Update()
     {
         
-        if (isInfected)
+        if (infected)
         {
             foreach (var p in players)
             {
@@ -55,7 +56,7 @@ public class Movement : MonoBehaviour
                 if(dist < 2 && dist > 0)
                 {
                     var pScript = p.GetComponent<Movement>();
-                    if (!pScript.isInfected)
+                    if (!pScript.infected)
                     {
                         pScript.GetInfected();
                     }
@@ -99,8 +100,9 @@ public class Movement : MonoBehaviour
 
     public void GetInfected()
     {
-        isInfected = true;
+        infected = true;
         timer = Random.Range(15, 30);
+        point.GetComponent<GameManager>().playerIsNowInfected();
         Debug.Log("Infected");
     }
 
@@ -111,6 +113,16 @@ public class Movement : MonoBehaviour
         yield return new WaitForSeconds(1);
         Destroy(inst);
 
+    }
+
+    public void wearMask()
+    {
+        hasMask = true;
+    }
+
+    public bool isInfected()
+    {
+        return infected;
     }
 
 }
