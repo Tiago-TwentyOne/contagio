@@ -50,6 +50,7 @@ public class Movement : MonoBehaviour
         
         if (infected)
         {
+            
             foreach (var p in players)
             {
                 var dist = Vector3.Distance(transform.position, p.transform.position);
@@ -118,6 +119,8 @@ public class Movement : MonoBehaviour
     public void wearMask()
     {
         hasMask = true;
+        var child = transform.GetChild(1);
+        child.GetComponent<SkinnedMeshRenderer>().material.color = Color.blue;
     }
 
     public bool isInfected()

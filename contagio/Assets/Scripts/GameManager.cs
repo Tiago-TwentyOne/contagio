@@ -18,12 +18,18 @@ public class GameManager : MonoBehaviour
 
     private int nInfectedPlayers;
     private int nPlayers;
+    private bool visibleUI = false;
+
+    public int maskNum = 3;
 
 
     private GameObject playerSelected;
 
+    public CameraMovement cameraMovement;
+
     void Start()
     {
+        
         players = GameObject.FindGameObjectsWithTag("Player");
         var randomPlayer = Random.Range(0, players.Length - 1);
         players[randomPlayer].GetComponent<Movement>().GetInfected();
@@ -35,53 +41,105 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !visibleUI)
         {
             Time.timeScale = 1;
             
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, layerPlayers))
+            if (Physics.Raycast(ray, out hit, 100f, layerPlayers))
             {
-                Time.timeScale = 0;
                 playerSelected = hit.transform.gameObject;
-                bQuarentena.gameObject.SetActive(true);
-                bMascara.gameObject.SetActive(true);
-                bTeste.gameObject.SetActive(true);
-                bCancelar.gameObject.SetActive(true);
-                
-
+                showUI();
             }
         }
     }
 
+    public void showUI()
+    {
+        cameraMovement.enabled = false;
+        Time.timeScale = 0;
+        bQuarentena.gameObject.SetActive(true);
+        bMascara.gameObject.SetActive(true);
+        if (playerSelected.gameObject.GetComponent<Movement>().hasMask || maskNum <= 0)
+        {
+            bMascara.GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            bMascara.GetComponent<Button>().interactable = true;
+        }
+        bTeste.gameObject.SetActive(true);
+        bCancelar.gameObject.SetActive(true);
+        visibleUI = true;
+        
+    }
+
     public void hideUI()
     {
+        cameraMovement.enabled = true;
         Time.timeScale = 1;
         bQuarentena.gameObject.SetActive(false);
         bMascara.gameObject.SetActive(false);
+   
         bTeste.gameObject.SetActive(false);
         bCancelar.gameObject.SetActive(false);
+        visibleUI = false;
+
     }
 
     public void useMask()
     {
+        maskNum--;
+        bMascara.GetComponent<Button>().interactable = false;
         playerSelected.GetComponent<Movement>().wearMask();
     }
 
     public void makeTest()
     {
         bool result = playerSelected.GetComponent<Movement>().isInfected();
+        Debug.Log(result.ToString());
     }
 
     private void updateScore()
     {
-        score.text = nInfectedPlayers.ToString() + " / " + players.Length.ToString();
+        score.text = nInfectedPlayers.ToString() + " / " + nPlayers.ToString();
+    }
+
+    public void quarantine()
+    {
+        var playerSelectedScript = playerSelected.GetComponent<Movement>();
+        nPlayers--;
+        if (playerSelectedScript.infected)
+        {
+            nInfectedPlayers--;
+            noOneInfected();
+        }
+        updateScore();
+        playerSelectedScript.enabled = false;
+        playerSelected.transform.position = new Vector3(100, 1, 100);
+    }
+
+    private void noOneInfected()
+    {
+        if(nInfectedPlayers <= 0)
+        {
+            Debug.Log("You Win");
+        }
+    }
+
+    private void allInfected()
+    {
+        if(nInfectedPlayers == nPlayers)
+        {
+            Debug.Log("You Lose");
+        }
     }
 
     public void playerIsNowInfected()
     {
         nInfectedPlayers += 1;
+        allInfected();
         updateScore();
     }
 
