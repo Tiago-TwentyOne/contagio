@@ -50,16 +50,18 @@ public class Movement : MonoBehaviour
         
         if (infected)
         {
-            
-            foreach (var p in players)
+            if (!hasMask)
             {
-                var dist = Vector3.Distance(transform.position, p.transform.position);
-                if(dist < 2 && dist > 0)
+                foreach (var p in players)
                 {
-                    var pScript = p.GetComponent<Movement>();
-                    if (!pScript.infected)
+                    var dist = Vector3.Distance(transform.position, p.transform.position);
+                    if (dist < 2 && dist > 0)
                     {
-                        pScript.GetInfected();
+                        var pScript = p.GetComponent<Movement>();
+                        if (!pScript.infected && !pScript.hasMask)
+                        {
+                            pScript.GetInfected();
+                        }
                     }
                 }
             }

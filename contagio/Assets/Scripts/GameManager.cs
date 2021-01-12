@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public Button bCancelar;
 
     public Text score;
+    public Text maskText;
+    public Text testText;
+
 
     private int nInfectedPlayers;
     private int nPlayers;
@@ -27,9 +30,11 @@ public class GameManager : MonoBehaviour
 
     public CameraMovement cameraMovement;
 
+    public int testTimer = 20;
+    private bool testReadyToUse = true;
+    private float timePassed;
     void Start()
     {
-        
         players = GameObject.FindGameObjectsWithTag("Player");
         var randomPlayer = Random.Range(0, players.Length - 1);
         players[randomPlayer].GetComponent<Movement>().GetInfected();
@@ -53,6 +58,18 @@ public class GameManager : MonoBehaviour
                 showUI();
             }
         }
+        if (!testReadyToUse)
+        {
+            timePassed += Time.deltaTime;
+            testText.text = $"Fazer o teste ({(int)(testTimer - timePassed)}s)";
+            if (timePassed >= testTimer)
+            {
+                testText.text = "Fazer o teste";
+                bTeste.GetComponent<Button>().interactable = true;
+                timePassed = 0;
+                testReadyToUse = true;
+            }
+        }
     }
 
     public void showUI()
@@ -60,6 +77,7 @@ public class GameManager : MonoBehaviour
         cameraMovement.enabled = false;
         Time.timeScale = 0;
         bQuarentena.gameObject.SetActive(true);
+        maskText.text = $"Equipar Máscara ({maskNum})"; 
         bMascara.gameObject.SetActive(true);
         if (playerSelected.gameObject.GetComponent<Movement>().hasMask || maskNum <= 0)
         {
@@ -81,7 +99,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         bQuarentena.gameObject.SetActive(false);
         bMascara.gameObject.SetActive(false);
-   
         bTeste.gameObject.SetActive(false);
         bCancelar.gameObject.SetActive(false);
         visibleUI = false;
@@ -92,11 +109,15 @@ public class GameManager : MonoBehaviour
     {
         maskNum--;
         bMascara.GetComponent<Button>().interactable = false;
+        maskText.text = $"Equipar Máscara ({maskNum})";
         playerSelected.GetComponent<Movement>().wearMask();
     }
 
     public void makeTest()
     {
+        testReadyToUse = false;
+        testText.text = $"Fazer o teste ({testTimer}s)";
+        bTeste.GetComponent<Button>().interactable = false;
         bool result = playerSelected.GetComponent<Movement>().isInfected();
         Debug.Log(result.ToString());
     }
