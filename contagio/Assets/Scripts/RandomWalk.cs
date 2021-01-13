@@ -10,6 +10,7 @@ public class RandomWalk : MonoBehaviour
 
     private bool walk = false;
     public bool isQuarantined = false;
+    public bool startedQuarentine = false;
 
     private Vector3 newTarget;
 
@@ -21,6 +22,11 @@ public class RandomWalk : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (startedQuarentine)
+        {
+            navMeshAgent.Warp(new Vector3(90, 1, -90));
+            startedQuarentine = false;    
+        }
         
         if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {

@@ -141,8 +141,8 @@ public class GameManager : MonoBehaviour
             noOneInfected();
         }
         updateScore();
-        playerSelectedScript.enabled = false;
-        playerSelected.transform.position = new Vector3(95, 1, -95);
+        playerWalkScript.startedQuarentine = true;
+        playerSelected.transform.position = new Vector3(90, 1, -90);
     }
 
     private void noOneInfected()
