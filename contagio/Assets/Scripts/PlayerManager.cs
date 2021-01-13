@@ -3,23 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Movement : MonoBehaviour
+public class PlayerManager : MonoBehaviour
 {
     public Animator animator;
-    public NavMeshAgent navMeshAgent;
+    //public NavMeshAgent navMeshAgent;
     //public Collider collider;
 
-    public bool walk = false;
-
-
-    public Transform point;
+    public Transform gameManager;
     public GameObject particles;
 
-    private Vector3 newTarget;
-    private float minX;
-    private float maxX;
-    private float minZ;
-    private float maxZ;
 
     public bool infected;
     public bool hasMask;
@@ -33,17 +25,8 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     private void Start()
     {
-        minX = 0f;
-        maxX = 100f;
-        minZ = 0f;
-        maxZ = -100f;
-
         players = GameObject.FindGameObjectsWithTag("Player");
-
-
-        GenerateRandomTarget();
         timePassed = 0;
-
 }
     private void Update()
     {
@@ -57,7 +40,7 @@ public class Movement : MonoBehaviour
                     var dist = Vector3.Distance(transform.position, p.transform.position);
                     if (dist < 2 && dist > 0)
                     {
-                        var pScript = p.GetComponent<Movement>();
+                        var pScript = p.GetComponent<PlayerManager>();
                         if (!pScript.infected && !pScript.hasMask)
                         {
                             pScript.GetInfected();
@@ -78,34 +61,15 @@ public class Movement : MonoBehaviour
 
         }
     }
-    void FixedUpdate()
-    {
-        if(navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
-        {
-            walk = false;
-            GenerateRandomTarget();
-        }
-        else
-        {
-            walk = true;
-        }
+    
 
-        animator.SetBool("Walk", walk);
-
-    }
-
-    void GenerateRandomTarget()
-    {
-        newTarget = new Vector3(Random.Range(minX, maxX), 1f, Random.Range(minZ, maxZ));
-        navMeshAgent.SetDestination(newTarget);
-        point.position = newTarget;
-    }
+    
 
     public void GetInfected()
     {
         infected = true;
         timer = Random.Range(15, 30);
-        point.GetComponent<GameManager>().playerIsNowInfected();
+        gameManager.GetComponent<GameManager>().playerIsNowInfected();
         Debug.Log("Infected");
     }
 

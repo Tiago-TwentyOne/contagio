@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     {
         players = GameObject.FindGameObjectsWithTag("Player");
         var randomPlayer = Random.Range(0, players.Length - 1);
-        players[randomPlayer].GetComponent<Movement>().GetInfected();
+        players[randomPlayer].GetComponent<PlayerManager>().GetInfected();
         nPlayers = players.Length;
         nInfectedPlayers = 1;
         updateScore();
@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         bQuarentena.gameObject.SetActive(true);
         maskText.text = $"Equipar Máscara ({maskNum})"; 
         bMascara.gameObject.SetActive(true);
-        if (playerSelected.gameObject.GetComponent<Movement>().hasMask || maskNum <= 0)
+        if (playerSelected.gameObject.GetComponent<PlayerManager>().hasMask || maskNum <= 0)
         {
             bMascara.GetComponent<Button>().interactable = false;
         }
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
         maskNum--;
         bMascara.GetComponent<Button>().interactable = false;
         maskText.text = $"Equipar Máscara ({maskNum})";
-        playerSelected.GetComponent<Movement>().wearMask();
+        playerSelected.GetComponent<PlayerManager>().wearMask();
     }
 
     public void makeTest()
@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour
         testReadyToUse = false;
         testText.text = $"Fazer o teste ({testTimer}s)";
         bTeste.GetComponent<Button>().interactable = false;
-        bool result = playerSelected.GetComponent<Movement>().isInfected();
+        bool result = playerSelected.GetComponent<PlayerManager>().isInfected();
         Debug.Log(result.ToString());
     }
 
@@ -129,7 +129,11 @@ public class GameManager : MonoBehaviour
 
     public void quarantine()
     {
-        var playerSelectedScript = playerSelected.GetComponent<Movement>();
+        var playerSelectedScript = playerSelected.GetComponent<PlayerManager>();
+        var playerWalkScript = playerSelected.GetComponent<RandomWalk>();
+        playerWalkScript.isQuarantined = true;
+        playerWalkScript.GenerateRandomTarget(85, 100, -85, -100);
+
         nPlayers--;
         if (playerSelectedScript.infected)
         {
@@ -138,7 +142,7 @@ public class GameManager : MonoBehaviour
         }
         updateScore();
         playerSelectedScript.enabled = false;
-        playerSelected.transform.position = new Vector3(100, 1, 100);
+        playerSelected.transform.position = new Vector3(95, 1, -95);
     }
 
     private void noOneInfected()
