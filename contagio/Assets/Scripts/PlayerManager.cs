@@ -30,20 +30,22 @@ public class PlayerManager : MonoBehaviour
 }
     private void Update()
     {
-        
         if (infected)
         {
             if (!hasMask)
             {
                 foreach (var p in players)
                 {
-                    var dist = Vector3.Distance(transform.position, p.transform.position);
-                    if (dist < 2 && dist > 0)
+                    if (p != null)
                     {
-                        var pScript = p.GetComponent<PlayerManager>();
-                        if (!pScript.infected && !pScript.hasMask)
+                        var dist = Vector3.Distance(transform.position, p.transform.position);
+                        if (dist < 2 && dist > 0)
                         {
-                            pScript.GetInfected();
+                            var pScript = p.GetComponent<PlayerManager>();
+                            if (!pScript.infected && !pScript.hasMask)
+                            {
+                                pScript.GetInfected();
+                            }
                         }
                     }
                 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class RandomWalk : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class RandomWalk : MonoBehaviour
 
     private Vector3 newTarget;
 
+    public GameManager gameManager;
+
     private void Start()
     {
 
@@ -25,6 +28,8 @@ public class RandomWalk : MonoBehaviour
         if (startedQuarentine)
         {
             navMeshAgent.Warp(new Vector3(90, 1, -90));
+            GenerateRandomTarget(85, 100, -85, -100);
+            StartCoroutine("testResultAction");
             startedQuarentine = false;    
         }
         
@@ -56,4 +61,29 @@ public class RandomWalk : MonoBehaviour
         newTarget = new Vector3(Random.Range(minX, maxX), 1f, Random.Range(minZ, maxZ));
         navMeshAgent.SetDestination(newTarget);
     }
+
+    public IEnumerator testResultAction()
+    {
+        var playerManagerScript = gameObject.GetComponent<PlayerManager>();
+        var playerWalkScript = gameObject.GetComponent<RandomWalk>();
+        var testResult = playerManagerScript.isInfected();
+        yield return new WaitForSeconds(5);
+        if (testResult)
+        {
+            StartCoroutine(gameManager.showToast("Positivo"));
+            playerManagerScript.enabled = false;
+            playerWalkScript.enabled = false;
+            Destroy(gameObject, 2.01f);
+            
+        }
+        else
+        {
+            StartCoroutine(gameManager.showToast("Negativo"));
+            navMeshAgent.Warp(new Vector3(83, 1, -95));
+            GenerateRandomTarget(0, 100, 0, -100);
+            isQuarantined = false;
+        }
+    }
+
+    
 }

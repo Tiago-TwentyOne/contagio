@@ -33,6 +33,9 @@ public class GameManager : MonoBehaviour
     public int testTimer = 20;
     private bool testReadyToUse = true;
     private float timePassed;
+
+    public GameObject toast;
+    public Text toastText;
     void Start()
     {
         players = GameObject.FindGameObjectsWithTag("Player");
@@ -46,6 +49,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (Input.GetMouseButtonDown(0) && !visibleUI)
         {
             Time.timeScale = 1;
@@ -113,14 +117,14 @@ public class GameManager : MonoBehaviour
         playerSelected.GetComponent<PlayerManager>().wearMask();
     }
 
-    public void makeTest()
-    {
-        testReadyToUse = false;
-        testText.text = $"Fazer o teste ({testTimer}s)";
-        bTeste.GetComponent<Button>().interactable = false;
-        bool result = playerSelected.GetComponent<PlayerManager>().isInfected();
-        Debug.Log(result.ToString());
-    }
+    //public void makeTest()
+    //{
+    //    testReadyToUse = false;
+    //    testText.text = $"Fazer o teste ({testTimer}s)";
+    //    bTeste.GetComponent<Button>().interactable = false;
+    //    bool result = playerSelected.GetComponent<PlayerManager>().isInfected();
+    //    Debug.Log(result.ToString());
+    //}
 
     private void updateScore()
     {
@@ -133,15 +137,15 @@ public class GameManager : MonoBehaviour
         var playerSelectedScript = playerSelected.GetComponent<PlayerManager>();
         var playerWalkScript = playerSelected.GetComponent<RandomWalk>();
         playerWalkScript.isQuarantined = true;
-        playerWalkScript.GenerateRandomTarget(85, 100, -85, -100);
+        //playerWalkScript.GenerateRandomTarget(85, 100, -85, -100);
 
-        nPlayers--;
-        if (playerSelectedScript.infected)
-        {
-            nInfectedPlayers--;
-            noOneInfected();
-        }
-        updateScore();
+        //nPlayers--;
+        //if (playerSelectedScript.infected)
+        //{
+        //    nInfectedPlayers--;
+        //    noOneInfected();
+        //}
+        //updateScore();
         playerWalkScript.startedQuarentine = true;
         playerSelected.transform.position = new Vector3(90, 1, -90);
     }
@@ -167,6 +171,16 @@ public class GameManager : MonoBehaviour
         nInfectedPlayers += 1;
         allInfected();
         updateScore();
+    }
+
+    public IEnumerator showToast(string message)
+    {
+        toastText.text = message;
+        toast.SetActive(true);
+        Debug.Log("Antes");
+        yield return new WaitForSeconds(2);
+        Debug.Log("Depois");
+        toast.SetActive(false);
     }
 
 }
