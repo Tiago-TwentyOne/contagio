@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour
     public Text testText;
 
 
-    private int nInfectedPlayers;
-    private int nPlayers;
+    private float nInfectedPlayers;
+    private float nPlayers;
     private bool visibleUI = false;
 
     public int maskNum = 3;
@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
         var randomPlayer = Random.Range(0, players.Length - 1);
         players[randomPlayer].GetComponent<PlayerManager>().GetInfected();
         nPlayers = players.Length;
-        nInfectedPlayers = 1;
         updateScore();
     }
 
@@ -55,25 +54,19 @@ public class GameManager : MonoBehaviour
                 var pScript = p.GetComponent<PlayerManager>();
                 bool pIsInfected = pScript.infected;
                 bool pHasMask = pScript.hasMask;
-                Debug.Log("1 Foreach player nao é null");
                 if (pIsInfected && !pHasMask)
                 {
-                    Debug.Log("esta infetado e nao tem mascara");
-
                     foreach (var player in players)
                     {
-                        Debug.Log("2 for");
 
                         if (player != null && player.GetInstanceID() != p.GetInstanceID())
                         {
-                            Debug.Log("não e null e nao sao o mesmo");
                             var dist = Vector3.Distance(player.transform.position, p.transform.position);
                             if (dist < 2 && dist > 0) 
                             {
                                 var playerScript = player.GetComponent<PlayerManager>();
                                 if (!playerScript.infected && !playerScript.hasMask)
                                 {
-                                    Debug.Log("fica infetado");
                                     playerScript.GetInfected();
                                 }
                             }
@@ -166,19 +159,8 @@ public class GameManager : MonoBehaviour
 
     public void quarantine()
     {
-        var playerSelectedScript = playerSelected.GetComponent<PlayerManager>();
         var playerWalkScript = playerSelected.GetComponent<RandomWalk>();
-        playerWalkScript.isQuarantined = true;
-        //playerWalkScript.GenerateRandomTarget(85, 100, -85, -100);
-
-        //nPlayers--;
-        //if (playerSelectedScript.infected)
-        //{
-        //    nInfectedPlayers--;
-        //    noOneInfected();
-        //}
-        //updateScore();
-        playerWalkScript.startedQuarentine = true;
+        playerWalkScript.startQuarentine();
         playerSelected.transform.position = new Vector3(90, 1, -90);
     }
 
@@ -192,10 +174,17 @@ public class GameManager : MonoBehaviour
 
     private void allInfected()
     {
-        if(nInfectedPlayers == nPlayers)
+        
+        if(nInfectedPlayers > 1)
         {
-            Debug.Log("You Lose");
+            if (nInfectedPlayers / nPlayers >= 0.65f)
+            {
+                Time.timeScale = 0;
+                StartCoroutine(showToast("You Lose"));
+                Debug.Log("You Lose");
+            }
         }
+        
     }
 
     public void playerIsNowInfected()

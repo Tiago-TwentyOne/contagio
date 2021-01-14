@@ -11,7 +11,6 @@ public class RandomWalk : MonoBehaviour
 
     private bool walk = false;
     public bool isQuarantined = false;
-    public bool startedQuarentine = false;
 
     private Vector3 newTarget;
 
@@ -19,19 +18,11 @@ public class RandomWalk : MonoBehaviour
 
     private void Start()
     {
-
        GenerateRandomTarget(0, 100, 0, -100);
     }
 
     void FixedUpdate()
     {
-        if (startedQuarentine)
-        {
-            navMeshAgent.Warp(new Vector3(90, 1, -90));
-            GenerateRandomTarget(85, 100, -85, -100);
-            StartCoroutine("testResultAction");
-            startedQuarentine = false;    
-        }
         
         if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
@@ -83,6 +74,14 @@ public class RandomWalk : MonoBehaviour
             GenerateRandomTarget(0, 100, 0, -100);
             isQuarantined = false;
         }
+    }
+
+    public void startQuarentine()
+    {
+        isQuarantined = true;
+        navMeshAgent.Warp(new Vector3(90, 1, -90));
+        GenerateRandomTarget(85, 100, -85, -100);
+        StartCoroutine("testResultAction");
     }
 
     
