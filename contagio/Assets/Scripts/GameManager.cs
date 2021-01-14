@@ -49,7 +49,39 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        foreach (var p in players)
+        {
+            if(p != null) {
+                var pScript = p.GetComponent<PlayerManager>();
+                bool pIsInfected = pScript.infected;
+                bool pHasMask = pScript.hasMask;
+                Debug.Log("1 Foreach player nao é null");
+                if (pIsInfected && !pHasMask)
+                {
+                    Debug.Log("esta infetado e nao tem mascara");
 
+                    foreach (var player in players)
+                    {
+                        Debug.Log("2 for");
+
+                        if (player != null && player.GetInstanceID() != p.GetInstanceID())
+                        {
+                            Debug.Log("não e null e nao sao o mesmo");
+                            var dist = Vector3.Distance(player.transform.position, p.transform.position);
+                            if (dist < 2 && dist > 0) 
+                            {
+                                var playerScript = player.GetComponent<PlayerManager>();
+                                if (!playerScript.infected && !playerScript.hasMask)
+                                {
+                                    Debug.Log("fica infetado");
+                                    playerScript.GetInfected();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (Input.GetMouseButtonDown(0) && !visibleUI)
         {
             Time.timeScale = 1;

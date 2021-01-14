@@ -32,24 +32,24 @@ public class PlayerManager : MonoBehaviour
     {
         if (infected)
         {
-            if (!hasMask)
-            {
-                foreach (var p in players)
-                {
-                    if (p != null)
-                    {
-                        var dist = Vector3.Distance(transform.position, p.transform.position);
-                        if (dist < 2 && dist > 0)
-                        {
-                            var pScript = p.GetComponent<PlayerManager>();
-                            if (!pScript.infected && !pScript.hasMask)
-                            {
-                                pScript.GetInfected();
-                            }
-                        }
-                    }
-                }
-            }
+            //if (!hasMask)
+            //{
+            //    foreach (var p in players)
+            //    {
+            //        if (p != null)
+            //        {
+            //            var dist = Vector3.Distance(transform.position, p.transform.position);
+            //            if (dist < 2 && dist > 0)
+            //            {
+            //                var pScript = p.GetComponent<PlayerManager>();
+            //                if (!pScript.infected && !pScript.hasMask)
+            //                {
+            //                    pScript.GetInfected();
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
             timePassed += Time.deltaTime; 
             if(timePassed >= timer)
             {
