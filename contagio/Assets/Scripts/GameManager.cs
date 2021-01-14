@@ -30,14 +30,17 @@ public class GameManager : MonoBehaviour
 
     public CameraMovement cameraMovement;
 
-    public int testTimer = 20;
+    public int prefabTimer = 10;
     private bool testReadyToUse = true;
     private float timePassed;
 
     public GameObject toast;
     public Text toastText;
+
+    public GameObject myPrefab;
     void Start()
     {
+       
         players = GameObject.FindGameObjectsWithTag("Player");
         var randomPlayer = Random.Range(0, players.Length - 1);
         players[randomPlayer].GetComponent<PlayerManager>().GetInfected();
@@ -87,18 +90,19 @@ public class GameManager : MonoBehaviour
                 showUI();
             }
         }
-        if (!testReadyToUse)
-        {
+       
             timePassed += Time.deltaTime;
-            testText.text = $"Fazer o teste ({(int)(testTimer - timePassed)}s)";
-            if (timePassed >= testTimer)
-            {
-                testText.text = "Fazer o teste";
-                bTeste.GetComponent<Button>().interactable = true;
-                timePassed = 0;
-                testReadyToUse = true;
-            }
+
+        if (timePassed >= prefabTimer)
+        {
+            Instantiate(myPrefab, new Vector3(70, 1, -95), Quaternion.identity);
+            players = GameObject.FindGameObjectsWithTag("Player");
+            nPlayers = players.Length;
+            updateScore();
+            timePassed = 0;
+
         }
+        
     }
 
     public void showUI()
@@ -106,6 +110,14 @@ public class GameManager : MonoBehaviour
         cameraMovement.enabled = false;
         Time.timeScale = 0;
         bQuarentena.gameObject.SetActive(true);
+        if (playerSelected.gameObject.GetComponent<RandomWalk>().isQuarantined)
+        {
+            bQuarentena.GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            bQuarentena.GetComponent<Button>().interactable = true;
+        }
         maskText.text = $"Equipar Máscara ({maskNum})"; 
         bMascara.gameObject.SetActive(true);
         if (playerSelected.gameObject.GetComponent<PlayerManager>().hasMask || maskNum <= 0)
@@ -116,7 +128,7 @@ public class GameManager : MonoBehaviour
         {
             bMascara.GetComponent<Button>().interactable = true;
         }
-        bTeste.gameObject.SetActive(true);
+        //bTeste.gameObject.SetActive(true);
         bCancelar.gameObject.SetActive(true);
         visibleUI = true;
         
@@ -128,7 +140,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         bQuarentena.gameObject.SetActive(false);
         bMascara.gameObject.SetActive(false);
-        bTeste.gameObject.SetActive(false);
+        //bTeste.gameObject.SetActive(false);
         bCancelar.gameObject.SetActive(false);
         visibleUI = false;
 
@@ -153,7 +165,6 @@ public class GameManager : MonoBehaviour
 
     private void updateScore()
     {
-        Debug.Log(nPlayers.ToString());
         score.text = nInfectedPlayers.ToString() + " / " + nPlayers.ToString();
     }
 
@@ -164,11 +175,13 @@ public class GameManager : MonoBehaviour
         playerSelected.transform.position = new Vector3(90, 1, -90);
     }
 
+
     private void noOneInfected()
     {
         if(nInfectedPlayers <= 0)
         {
-            Debug.Log("You Win");
+            Time.timeScale = 0;
+            StartCoroutine(showToast("You win"));
         }
     }
 
@@ -181,12 +194,19 @@ public class GameManager : MonoBehaviour
             {
                 Time.timeScale = 0;
                 StartCoroutine(showToast("You Lose"));
-                Debug.Log("You Lose");
             }
         }
         
     }
 
+
+    public void playerInfectedDestroyed()
+    {
+        nInfectedPlayers--;
+        nPlayers--;
+        updateScore();
+        noOneInfected();
+    }
     public void playerIsNowInfected()
     {
         nInfectedPlayers += 1;

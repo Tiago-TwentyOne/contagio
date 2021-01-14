@@ -14,11 +14,12 @@ public class RandomWalk : MonoBehaviour
 
     private Vector3 newTarget;
 
-    public GameManager gameManager;
+    public GameObject gameManager;
 
     private void Start()
     {
-       GenerateRandomTarget(0, 100, 0, -100);
+        gameManager = GameObject.FindGameObjectWithTag("GameController");
+        GenerateRandomTarget(0, 100, 0, -100);
     }
 
     void FixedUpdate()
@@ -61,15 +62,18 @@ public class RandomWalk : MonoBehaviour
         yield return new WaitForSeconds(5);
         if (testResult)
         {
-            StartCoroutine(gameManager.showToast("Positivo"));
+            StartCoroutine(gameManager.GetComponent<GameManager>().showToast("Positivo"));
             playerManagerScript.enabled = false;
             playerWalkScript.enabled = false;
-            Destroy(gameObject, 2.01f);
+            yield return new WaitForSeconds(2);
+            Destroy(gameObject);
+            gameManager.GetComponent<GameManager>().playerInfectedDestroyed();
+            
             
         }
         else
         {
-            StartCoroutine(gameManager.showToast("Negativo"));
+            StartCoroutine(gameManager.GetComponent<GameManager>().showToast("Negativo"));
             navMeshAgent.Warp(new Vector3(83, 1, -95));
             GenerateRandomTarget(0, 100, 0, -100);
             isQuarantined = false;

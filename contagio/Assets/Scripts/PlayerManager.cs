@@ -9,7 +9,7 @@ public class PlayerManager : MonoBehaviour
     //public NavMeshAgent navMeshAgent;
     //public Collider collider;
 
-    public Transform gameManager;
+    public GameObject gameManager;
     public GameObject particles;
 
 
@@ -25,6 +25,7 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     private void Start()
     {
+        gameManager = GameObject.FindGameObjectWithTag("GameController");
         players = GameObject.FindGameObjectsWithTag("Player");
         timePassed = 0;
 }
