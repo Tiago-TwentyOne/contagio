@@ -124,6 +124,7 @@ public class GameManager : MonoBehaviour
 
     private void updateScore()
     {
+        Debug.Log(nPlayers.ToString());
         score.text = nInfectedPlayers.ToString() + " / " + nPlayers.ToString();
     }
 
