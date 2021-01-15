@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
                         if (player != null && player.GetInstanceID() != p.GetInstanceID())
                         {
                             var dist = Vector3.Distance(player.transform.position, p.transform.position);
-                            if (dist < 2 && dist > 0) 
+                            if (dist < 3 && dist > 0) 
                             {
                                 var playerScript = player.GetComponent<PlayerManager>();
                                 if (!playerScript.infected && !playerScript.hasMask)

@@ -22,21 +22,21 @@ public class CameraMovement : MonoBehaviour
             Vector3 direction = dragOrigin - GetWorldPoint();
             Vector3 newPos = cam.transform.position + direction;
             
-            if(newPos.x > 90)
+            if(newPos.x > 87)
             {
-                newPos.x = 90;
+                newPos.x = 87;
             }
-            if (newPos.x < 10)
+            if (newPos.x < 12)
             {
-                newPos.x = 10;
+                newPos.x = 12;
             }
-            if (newPos.z < -105)
+            if (newPos.z < -102)
             {
-                newPos.z = -105;
+                newPos.z = -102;
             }
-            if (newPos.z > -16)
+            if (newPos.z > -20)
             {
-                newPos.z = -16;
+                newPos.z = -20;
             }
             cam.transform.position = newPos;
         }

@@ -18,17 +18,19 @@ public class RandomWalk : MonoBehaviour
 
     private void Start()
     {
+        //No start vai à procura do gameManager
         gameManager = GameObject.FindGameObjectWithTag("GameController");
+        //Gera um target
         GenerateRandomTarget(0, 100, 0, -100);
     }
 
     void FixedUpdate()
     {
-        
+        //Verifica se já está perto do target
         if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
             walk = false;
-           
+            //Caso esteja de quarentena define o target dentro da divisão
             if (isQuarantined)
             {
                 GenerateRandomTarget(85, 100, -85, -100);
@@ -43,11 +45,11 @@ public class RandomWalk : MonoBehaviour
         {
             walk = true;
         }
-
+        //Anima o personagem
         animator.SetBool("Walk", walk);
 
     }
-
+   
     public void GenerateRandomTarget(float minX, float maxX, float minZ, float maxZ)
     {
         newTarget = new Vector3(Random.Range(minX, maxX), 1f, Random.Range(minZ, maxZ));
