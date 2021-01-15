@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetMouseButtonDown(0) && !visibleUI)
+        if (Input.GetMouseButtonDown(0) && !visibleUI && !PauseMenu.gameIsPaused)
         {
             Time.timeScale = 1;
             
