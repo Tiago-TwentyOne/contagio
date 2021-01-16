@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
 
     private float nInfectedPlayers;
     private float nPlayers;
-    private bool visibleUI = false;
 
     public int maskNum = 3;
 
@@ -31,7 +30,6 @@ public class GameManager : MonoBehaviour
     public CameraMovement cameraMovement;
 
     public int prefabTimer = 10;
-    private bool testReadyToUse = true;
     private float timePassed;
 
     public GameObject toast;
@@ -43,17 +41,19 @@ public class GameManager : MonoBehaviour
     public Text resultText;
     void Start()
     {
-       
+        //Find players
         players = GameObject.FindGameObjectsWithTag("Player");
+        //Make a player infected
         var randomPlayer = Random.Range(0, players.Length - 1);
         players[randomPlayer].GetComponent<PlayerManager>().GetInfected();
         nPlayers = players.Length;
-        updateScore();
+        UpdateScore();
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Check distance between player and infect 
         foreach (var p in players)
         {
             if(p != null) {
@@ -81,37 +81,37 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetMouseButtonDown(0) && !visibleUI && !PauseMenu.gameIsPaused)
+        if (Input.GetMouseButtonDown(0) && !PauseMenu.gameIsPaused)
         {
-            Time.timeScale = 1;
-            
+            //Check if the player was clicked and show player options
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100f, layerPlayers))
             {
                 playerSelected = hit.transform.gameObject;
-                showUI();
+                ShowUI();
             }
         }
-       
-            timePassed += Time.deltaTime;
+
+        //Timer to istanciate prefab
+        timePassed += Time.deltaTime;
 
         if (timePassed >= prefabTimer)
         {
             Instantiate(myPrefab, new Vector3(70, 1, -95), Quaternion.identity);
             players = GameObject.FindGameObjectsWithTag("Player");
             nPlayers = players.Length;
-            updateScore();
+            UpdateScore();
             timePassed = 0;
-
         }
         
     }
-
-    public void showUI()
+    //Pause game and show UI
+    public void ShowUI()
     {
-        cameraMovement.enabled = false;
+        PauseMenu.gameIsPaused = true;
         Time.timeScale = 0;
+
         bQuarentena.gameObject.SetActive(true);
         if (playerSelected.gameObject.GetComponent<RandomWalk>().isQuarantined)
         {
@@ -133,11 +133,9 @@ public class GameManager : MonoBehaviour
         }
         //bTeste.gameObject.SetActive(true);
         bCancelar.gameObject.SetActive(true);
-        visibleUI = true;
-        
     }
-
-    public void hideUI()
+    //Unpause game and hide UI
+    public void HideUI()
     {
         cameraMovement.enabled = true;
         Time.timeScale = 1;
@@ -145,16 +143,14 @@ public class GameManager : MonoBehaviour
         bMascara.gameObject.SetActive(false);
         //bTeste.gameObject.SetActive(false);
         bCancelar.gameObject.SetActive(false);
-        visibleUI = false;
-
+        PauseMenu.gameIsPaused = false;
     }
-
-    public void useMask()
+    //Equip mask
+    public void UseMask()
     {
         maskNum--;
-        bMascara.GetComponent<Button>().interactable = false;
-        maskText.text = $"Equipar Máscara ({maskNum})";
-        playerSelected.GetComponent<PlayerManager>().wearMask();
+        playerSelected.GetComponent<PlayerManager>().WearMask();
+        HideUI();
     }
 
     //public void makeTest()
@@ -166,20 +162,22 @@ public class GameManager : MonoBehaviour
     //    Debug.Log(result.ToString());
     //}
 
-    private void updateScore()
+    //Update  infected/players
+    private void UpdateScore()
     {
         score.text = nInfectedPlayers.ToString() + " / " + nPlayers.ToString();
     }
 
-    public void quarantine()
+    //Start quarentine
+    public void Quarantine()
     {
         var playerWalkScript = playerSelected.GetComponent<RandomWalk>();
-        playerWalkScript.startQuarentine();
-        playerSelected.transform.position = new Vector3(90, 1, -90);
+        playerWalkScript.StartQuarentine();
+        HideUI();
     }
 
-
-    private void noOneInfected()
+    //Check if no one is infected
+    private void NoOneInfected()
     {
         if(nInfectedPlayers <= 0)
         {
@@ -190,7 +188,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void allInfected()
+    //Check if 65% of the population is infected
+    private void CheckLoseCondition()
     {
         
         if(nInfectedPlayers > 1)
@@ -206,22 +205,25 @@ public class GameManager : MonoBehaviour
         
     }
 
-
-    public void playerInfectedDestroyed()
+    //When the player infected is destroyed update score and check if no one is infected
+    public void PlayerInfectedDestroyed()
     {
         nInfectedPlayers--;
         nPlayers--;
-        updateScore();
-        noOneInfected();
-    }
-    public void playerIsNowInfected()
-    {
-        nInfectedPlayers += 1;
-        allInfected();
-        updateScore();
+        UpdateScore();
+        NoOneInfected();
     }
 
-    public IEnumerator showToast(string message)
+    //When the player is infected update score and check lose condition
+    public void PlayerIsNowInfected()
+    {
+        nInfectedPlayers += 1;
+        CheckLoseCondition();
+        UpdateScore();
+    }
+
+    
+    public IEnumerator ShowToast(string message)
     {
         toastText.text = message;
         toast.SetActive(true);

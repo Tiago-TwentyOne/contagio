@@ -6,8 +6,6 @@ using UnityEngine.AI;
 public class PlayerManager : MonoBehaviour
 {
     public Animator animator;
-    //public NavMeshAgent navMeshAgent;
-    //public Collider collider;
 
     public GameObject gameManager;
     public GameObject particles;
@@ -21,11 +19,9 @@ public class PlayerManager : MonoBehaviour
     private int timer;
     private float timePassed;
 
-
-    // Update is called once per frame
     private void Start()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameController");
+        gameManager = GameObject.FindGameObjectWithTag("GameManager");
         players = GameObject.FindGameObjectsWithTag("Player");
         timePassed = 0;
 }
@@ -33,7 +29,6 @@ public class PlayerManager : MonoBehaviour
     {
         if (infected)
         {
-            
             timePassed += Time.deltaTime; 
             if(timePassed >= timer)
             {
@@ -51,15 +46,15 @@ public class PlayerManager : MonoBehaviour
     
 
     
-
+    //Get infected, start the timer to cough and notify game manager  
     public void GetInfected()
     {
         infected = true;
         timer = Random.Range(15, 30);
-        gameManager.GetComponent<GameManager>().playerIsNowInfected();
-        Debug.Log("Infected");
+        gameManager.GetComponent<GameManager>().PlayerIsNowInfected();
     }
 
+    //Play Cough animation and show particles
     public IEnumerator Cough()
     {
         animator.Play("Cough");
@@ -68,15 +63,15 @@ public class PlayerManager : MonoBehaviour
         Destroy(inst);
 
     }
-
-    public void wearMask()
+    //Wear mask and turn player blue
+    public void WearMask()
     {
         hasMask = true;
         var child = transform.GetChild(1);
         child.GetComponent<SkinnedMeshRenderer>().material.color = Color.blue;
     }
 
-    public bool isInfected()
+    public bool IsInfected()
     {
         return infected;
     }

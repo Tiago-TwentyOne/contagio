@@ -1,8 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UI;
 
 public class RandomWalk : MonoBehaviour
 {
@@ -18,19 +16,17 @@ public class RandomWalk : MonoBehaviour
 
     private void Start()
     {
-        //No start vai à procura do gameManager
-        gameManager = GameObject.FindGameObjectWithTag("GameController");
-        //Gera um target
+        gameManager = GameObject.FindGameObjectWithTag("GameManager");
         GenerateRandomTarget(0, 100, 0, -100);
     }
 
     void FixedUpdate()
     {
-        //Verifica se já está perto do target
+        
         if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
             walk = false;
-            //Caso esteja de quarentena define o target dentro da divisão
+            //If is in quarantined define target inside quarentine
             if (isQuarantined)
             {
                 GenerateRandomTarget(85, 100, -85, -100);
@@ -45,7 +41,7 @@ public class RandomWalk : MonoBehaviour
         {
             walk = true;
         }
-        //Anima o personagem
+        //Walk animation
         animator.SetBool("Walk", walk);
 
     }
@@ -56,38 +52,47 @@ public class RandomWalk : MonoBehaviour
         navMeshAgent.SetDestination(newTarget);
     }
 
-    public IEnumerator testResultAction()
+    public IEnumerator TestResultAction()
     {
+        //Get player scripts
         var playerManagerScript = gameObject.GetComponent<PlayerManager>();
         var playerWalkScript = gameObject.GetComponent<RandomWalk>();
-        var testResult = playerManagerScript.isInfected();
+        //Check if player is infected
+        var testResult = playerManagerScript.IsInfected();
+        //Wait 5 seconds before show result
         yield return new WaitForSeconds(5);
         if (testResult)
         {
-            StartCoroutine(gameManager.GetComponent<GameManager>().showToast("Positivo"));
+            //Show toast with test result
+            StartCoroutine(gameManager.GetComponent<GameManager>().ShowToast("TESTE POSITIVO"));
+            //Disable player scripts
             playerManagerScript.enabled = false;
             playerWalkScript.enabled = false;
+            //Wait until toast finish to destroy player
             yield return new WaitForSeconds(2);
             Destroy(gameObject);
-            gameManager.GetComponent<GameManager>().playerInfectedDestroyed();
+            //Notify the gameManager that the player has been destroyed
+            gameManager.GetComponent<GameManager>().PlayerInfectedDestroyed();
             
             
         }
         else
         {
-            StartCoroutine(gameManager.GetComponent<GameManager>().showToast("Negativo"));
+            //Show toast with test result
+            StartCoroutine(gameManager.GetComponent<GameManager>().ShowToast("TESTE NEGATIVO"));
+            //Remove player from quarentine room
             navMeshAgent.Warp(new Vector3(83, 1, -95));
             GenerateRandomTarget(0, 100, 0, -100);
             isQuarantined = false;
         }
     }
 
-    public void startQuarentine()
+    public void StartQuarentine()
     {
         isQuarantined = true;
         navMeshAgent.Warp(new Vector3(90, 1, -90));
         GenerateRandomTarget(85, 100, -85, -100);
-        StartCoroutine("testResultAction");
+        StartCoroutine("TestResultAction");
     }
 
     
