@@ -8,6 +8,7 @@ public class PauseMenu : MonoBehaviour
 {
     public static bool gameIsPaused = false;
     public GameObject pauseMenuUI;
+    public GameObject tutorialManger;
     public void Pause()
     {
         pauseMenuUI.SetActive(true);
@@ -25,5 +26,10 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(1);
     }
 }

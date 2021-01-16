@@ -38,6 +38,9 @@ public class GameManager : MonoBehaviour
     public Text toastText;
 
     public GameObject myPrefab;
+
+    public GameObject resultUI;
+    public Text resultText;
     void Start()
     {
        
@@ -181,7 +184,9 @@ public class GameManager : MonoBehaviour
         if(nInfectedPlayers <= 0)
         {
             Time.timeScale = 0;
-            StartCoroutine(showToast("You win"));
+            resultText.text = "YOU WIN";
+            PauseMenu.gameIsPaused = true;
+            resultUI.SetActive(true);
         }
     }
 
@@ -193,7 +198,9 @@ public class GameManager : MonoBehaviour
             if (nInfectedPlayers / nPlayers >= 0.65f)
             {
                 Time.timeScale = 0;
-                StartCoroutine(showToast("You Lose"));
+                resultText.text = "YOU LOSE";
+                PauseMenu.gameIsPaused = true;
+                resultUI.SetActive(true);
             }
         }
         
@@ -218,10 +225,7 @@ public class GameManager : MonoBehaviour
     {
         toastText.text = message;
         toast.SetActive(true);
-        Debug.Log("Antes");
         yield return new WaitForSeconds(2);
-        Debug.Log("Depois");
         toast.SetActive(false);
     }
-
 }
